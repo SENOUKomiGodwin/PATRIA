@@ -1,0 +1,210 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - 1 conteneur, 5 bases de données
+  postgres:
+    image: postgres:16
+    container_name: patrimoine-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - patrimoine-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx - API Gateway
+  gateway:
+    image: nginx:alpine
+    container_name: patrimoine-gateway
+    ports:
+      - "${GATEWAY_PORT:-80}:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - asset-service
+      - movement-service
+      - inventory-service
+      - maintenance-service
+      - reporting-service
+      - frontend
+    networks:
+      - patrimoine-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: patrimoine-auth-service
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: auth_db
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine-network
+
+  # Asset Service
+  asset-service:
+    build:
+      context: ./services/asset-service
+      dockerfile: Dockerfile
+    container_name: patrimoine-asset-service
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: asset_db
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_URL: http://auth-service:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine-network
+
+  # Movement Service
+  movement-service:
+    build:
+      context: ./services/movement-service
+      dockerfile: Dockerfile
+    container_name: patrimoine-movement-service
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: movement_db
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ASSET_SERVICE_URL: http://asset-service:80
+      AUTH_SERVICE_URL: http://auth-service:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine-network
+
+  # Inventory Service
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      dockerfile: Dockerfile
+    container_name: patrimoine-inventory-service
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: inventory_db
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ASSET_SERVICE_URL: http://asset-service:80
+      AUTH_SERVICE_URL: http://auth-service:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine-network
+
+  # Maintenance Service
+  maintenance-service:
+    build:
+      context: ./services/maintenance-service
+      dockerfile: Dockerfile
+    container_name: patrimoine-maintenance-service
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: maintenance_db
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ASSET_SERVICE_URL: http://asset-service:80
+      AUTH_SERVICE_URL: http://auth-service:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine-network
+
+  # Reporting Service
+  reporting-service:
+    build:
+      context: ./services/reporting-service
+      dockerfile: Dockerfile
+    container_name: patrimoine-reporting-service
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: reporting_db
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ASSET_SERVICE_URL: http://asset-service:80
+      MOVEMENT_SERVICE_URL: http://movement-service:80
+      INVENTORY_SERVICE_URL: http://inventory-service:80
+      MAINTENANCE_SERVICE_URL: http://maintenance-service:80
+      AUTH_SERVICE_URL: http://auth-service:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patrimoine-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: patrimoine-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    networks:
+      - patrimoine-network
+
+networks:
+  patrimoine-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
