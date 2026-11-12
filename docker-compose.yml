@@ -1,0 +1,186 @@
+name: patria
+
+version: '3.8'
+
+x-laravel-env: &laravel-env
+  APP_ENV: ${APP_ENV:-production}
+  APP_DEBUG: ${APP_DEBUG:-false}
+  APP_URL: ${APP_URL:-http://localhost}
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_USERNAME: ${POSTGRES_USER}
+  DB_PASSWORD: ${POSTGRES_PASSWORD}
+  JWT_SECRET: ${JWT_SECRET}
+
+services:
+  # PostgreSQL - 1 conteneur, 6 bases de données
+  postgres:
+    image: postgres:16
+    container_name: patria-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - patria-postgres-data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - patria-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U patrimoine_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx - API Gateway
+  gateway:
+    image: nginx:alpine
+    container_name: patria-gateway
+    ports:
+      - "${GATEWAY_PORT:-80}:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - asset-service
+      - movement-service
+      - inventory-service
+      - maintenance-service
+      - reporting-service
+      - frontend
+    networks:
+      - patria-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    image: patria/auth-service
+    container_name: patria-auth-service
+    environment:
+      <<: *laravel-env
+      DB_DATABASE: auth_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patria-network
+
+  # Asset Service
+  asset-service:
+    build:
+      context: ./services/asset-service
+      dockerfile: Dockerfile
+    image: patria/asset-service
+    container_name: patria-asset-service
+    environment:
+      <<: *laravel-env
+      DB_DATABASE: asset_db
+      AUTH_SERVICE_URL: http://auth-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patria-network
+
+  # Movement Service
+  movement-service:
+    build:
+      context: ./services/movement-service
+      dockerfile: Dockerfile
+    image: patria/movement-service
+    container_name: patria-movement-service
+    environment:
+      <<: *laravel-env
+      DB_DATABASE: movement_db
+      ASSET_SERVICE_URL: http://asset-service:8000
+      AUTH_SERVICE_URL: http://auth-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patria-network
+
+  # Inventory Service
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      dockerfile: Dockerfile
+    image: patria/inventory-service
+    container_name: patria-inventory-service
+    environment:
+      <<: *laravel-env
+      DB_DATABASE: inventory_db
+      ASSET_SERVICE_URL: http://asset-service:8000
+      AUTH_SERVICE_URL: http://auth-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patria-network
+
+  # Maintenance Service
+  maintenance-service:
+    build:
+      context: ./services/maintenance-service
+      dockerfile: Dockerfile
+    image: patria/maintenance-service
+    container_name: patria-maintenance-service
+    environment:
+      <<: *laravel-env
+      DB_DATABASE: maintenance_db
+      ASSET_SERVICE_URL: http://asset-service:8000
+      AUTH_SERVICE_URL: http://auth-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patria-network
+
+  # Reporting Service
+  reporting-service:
+    build:
+      context: ./services/reporting-service
+      dockerfile: Dockerfile
+    image: patria/reporting-service
+    container_name: patria-reporting-service
+    environment:
+      <<: *laravel-env
+      DB_DATABASE: reporting_db
+      ASSET_SERVICE_URL: http://asset-service:8000
+      MOVEMENT_SERVICE_URL: http://movement-service:8000
+      INVENTORY_SERVICE_URL: http://inventory-service:8000
+      MAINTENANCE_SERVICE_URL: http://maintenance-service:8000
+      AUTH_SERVICE_URL: http://auth-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - patria-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: patria/frontend
+    container_name: patria-frontend
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    networks:
+      - patria-network
+
+networks:
+  patria-network:
+    driver: bridge
+
+volumes:
+  patria-postgres-data:

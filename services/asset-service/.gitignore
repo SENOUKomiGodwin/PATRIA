@@ -1,0 +1,16 @@
+.env
+vendor/
+node_modules/
+storage/
+public/storage/
+public/hot
+public/build
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+*.log
