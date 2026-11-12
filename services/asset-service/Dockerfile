@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
@@ -34,4 +35,4 @@ RUN chown -R www-data:www-data /app \
 EXPOSE 8000
 
 # Start command
-CMD php artisan migrate --force --seed && php artisan serve --host=0.0.0.0 --port=8000
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000

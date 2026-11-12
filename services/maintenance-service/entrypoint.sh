@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Run migrations and seeds
-php artisan migrate --force --seed
+# Run migrations
+php artisan migrate --force
 
 # Start the scheduler in the background
 php artisan schedule:work &

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     zip \
     unzip \
     nginx \
@@ -36,4 +37,4 @@ RUN chown -R www-data:www-data /app \
 EXPOSE 80
 
 # Start command
-CMD php artisan serve --host=0.0.0.0 --port=80
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=80
