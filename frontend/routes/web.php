@@ -10,6 +10,11 @@ use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 
+// Style guide (dev only)
+Route::get('/styleguide', function () {
+    return view('styleguide.index');
+})->name('styleguide');
+
 // Auth
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);

@@ -9,12 +9,34 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
+    /* PATRIA Design Tokens */
     --color-patria-green: #0C6744;
-    --color-patria-green-dark: #0A5336;
-    --color-patria-olive: #7A5C00;
-    --color-patria-yellow: #F2B705;
+    --color-patria-green-interface: #1E8E5A;
+    --color-patria-gold: #F2B705;
     --color-patria-red: #C62828;
     --color-patria-bg: #F5F7FA;
-    --color-patria-green-start: #2D753A;
-    --color-patria-gold: #D7B305;
+    --color-patria-border: #DFE7E1;
+    --color-patria-text: #1A1A1A;
+    --color-patria-text-secondary: #6B7280;
+    --color-patria-sidebar-dark: #006A4A;
+    --color-patria-badge: #218051;
+
+    /* Donut segments */
+    --color-donut-1: #1E8E5A;
+    --color-donut-2: #8A9F3C;
+    --color-donut-3: #8CBDA5;
+    --color-donut-4: #F2B705;
+    --color-donut-5: #208658;
+
+    /* Gradients */
+    --color-gradient-panel-start: #0C6744;
+    --color-gradient-panel-end: #7A5C00;
+    --color-gradient-button-start: #2D753A;
+    --color-gradient-button-end: #D7B305;
+    --color-sidebar-start: #0C6744;
+    --color-sidebar-end: #7A5C00;
+
+    /* Border radius */
+    --radius-button: 6px;
+    --radius-card: 8px;
 }
