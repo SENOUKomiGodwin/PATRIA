@@ -83,11 +83,10 @@
                                 type="email"
                                 id="email"
                                 name="email"
-                                value="{{ old('email') }}"
+                                value="{{ old('email') ?: 'hom@patrimoine.gov' }}"
                                 required
                                 autofocus
                                 autocomplete="email"
-                                placeholder="nom@patrimoine.gov"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none transition-colors"
                                 :disabled="loading"
                             >
@@ -123,9 +122,9 @@
                     </div>
                 </form>
 
-                <div class="mt-8 space-y-4 text-sm text-gray-500">
+                <div class="mt-8 space-y-3 text-sm text-gray-500">
                     <p>Accès selon votre rôle : ADMIN, GESTIONNAIRE, AGENT ou AUDITEUR</p>
-                    <p>Problème de connexion ? Contactez le support technique</p>
+                    <p>Problème de connexion ? <a href="#" class="text-[#0C6744] hover:underline">Contactez le support technique</a></p>
                     <p class="text-xs">Vos données sont protégées conformément à la réglementation en vigueur</p>
                     <p class="text-xs">© 2024 PATRIA - Tous droits réservés</p>
                 </div>
