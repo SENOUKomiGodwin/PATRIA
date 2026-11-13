@@ -70,10 +70,10 @@
             @endif
 
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Connexion</h2>
-                <p class="text-gray-600 mb-8">Accédez à votre espace de gestion</p>
+                <h2 class="text-2xl font-bold text-[#0C6744] mb-1 tracking-wide">ACCÈS SÉCURISÉ</h2>
+                <p class="text-3xl font-bold text-gray-900 mb-8">Bienvenue</p>
 
-                <form method="POST" action="{{ route('login') }}" x-data="{ loading: false }">
+                <form method="POST" action="{{ route('login') }}" x-data="{ loading: false }" @submit="if(document.getElementById('password').value === '********') document.getElementById('password').value = ''">
                     @csrf
 
                     <div class="space-y-5">
@@ -83,7 +83,7 @@
                                 type="email"
                                 id="email"
                                 name="email"
-                                value="{{ old('email') ?: 'hom@patrimoine.gov' }}"
+                                value="{{ old('email') ?: 'nom@patrimoine.gov' }}"
                                 required
                                 autofocus
                                 autocomplete="email"
@@ -98,6 +98,7 @@
                                 type="password"
                                 id="password"
                                 name="password"
+                                value="********"
                                 required
                                 autocomplete="current-password"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none transition-colors"
