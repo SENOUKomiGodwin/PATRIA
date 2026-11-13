@@ -2,6 +2,7 @@
     'title' => null,
     'value' => null,
     'subtitle' => null,
+    'subtitleClass' => 'text-patria-text-secondary',
     'icon' => null,
 ])
 
@@ -11,7 +12,7 @@
             <p class="text-sm text-patria-text-secondary mb-1">{{ $title }}</p>
             <p class="text-3xl font-bold text-patria-green">{{ $value }}</p>
             @if ($subtitle)
-                <p class="text-sm text-patria-text-secondary mt-1">{{ $subtitle }}</p>
+                <p class="text-sm {{ $subtitleClass }} mt-1">{{ $subtitle }}</p>
             @endif
         </div>
         @if ($icon)
