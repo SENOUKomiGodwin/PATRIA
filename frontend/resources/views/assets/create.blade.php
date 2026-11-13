@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Nouveau bien')
+@section 'content'
 
 <div class="space-y-6" x-data="assetForm()">
     <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -205,3 +206,4 @@ function assetForm() {
     }
 }
 </script>
+@endsection

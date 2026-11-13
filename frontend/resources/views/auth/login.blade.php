@@ -2,6 +2,7 @@
 
 @section('title', 'Connexion')
 
+@section('content')
 <div class="min-h-screen flex">
     <!-- Left panel - Branding -->
     <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0C6744] to-[#7A5C00] items-center justify-center p-12">
@@ -99,3 +100,4 @@
         </div>
     </div>
 </div>
+@endsection

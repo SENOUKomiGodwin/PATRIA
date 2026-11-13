@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Biens')
+@section 'content'
 
 <div class="space-y-6" x-data="assetsPage()">
     <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -221,3 +222,4 @@ function assetsPage() {
     }
 }
 </script>
+@endsection

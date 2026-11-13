@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Campagnes d\'inventaire')
+@section 'content'
 
 <div class="space-y-6" x-data="inventoriesPage()">
     <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -202,3 +203,4 @@ function inventoriesPage() {
     }
 }
 </script>
+@endsection

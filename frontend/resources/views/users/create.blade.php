@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Nouvel utilisateur')
+@section 'content'
 
 <div class="space-y-6" x-data="userForm()">
     <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -152,3 +153,4 @@ function userForm() {
     }
 }
 </script>
+@endsection

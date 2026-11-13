@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Plans préventifs')
+@section 'content'
 
 <div class="space-y-6" x-data="maintenancePlans()">
     <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -287,3 +288,4 @@ function maintenancePlans() {
     }
 }
 </script>
+@endsection

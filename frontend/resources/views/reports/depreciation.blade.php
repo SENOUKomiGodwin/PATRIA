@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Tableau d\'amortissement')
+@section 'content'
 
 <div class="space-y-6" x-data="depreciationPage()">
     <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -161,3 +162,4 @@ function depreciationPage() {
     }
 }
 </script>
+@endsection
