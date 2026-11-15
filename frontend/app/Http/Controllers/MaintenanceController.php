@@ -13,7 +13,7 @@ class MaintenanceController extends Controller
 
     public function showIntervention($id)
     {
-        return view('maintenance.intervention', ['id' => $id]);
+        return view('maintenance.intervention');
     }
 
     public function plans(Request $request)

@@ -20,6 +20,15 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Demo mode: bypass API call
+        if (env('DEMO_MODE', false)) {
+            Session::put('jwt_token', 'demo_token_' . time());
+            Session::put('user_name', 'Aminata Diallo');
+            Session::put('user_role', 'ADMIN');
+            Session::put('user_service', 'Administration centrale');
+            return redirect()->intended('/');
+        }
+
         try {
             $response = Http::post(env('API_URL') . '/api/auth/login', [
                 'email' => $credentials['email'],

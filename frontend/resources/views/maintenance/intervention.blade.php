@@ -1,308 +1,244 @@
-@extends('layouts.app')
+@extends('components.layout-app')
 
-@section('title', 'Détail intervention')
-@section 'content'
+@section('title', 'Détail d’intervention')
 
-<div class="space-y-6" x-data="interventionDetail('{{ $id }}')">
-    <nav class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="{{ route('dashboard') }}" class="hover:text-gray-900">Accueil</a>
-        <span>/</span>
-        <a href="{{ route('maintenance.index') }}" class="hover:text-gray-900">Maintenance</a>
-        <span>/</span>
-        <span class="text-gray-900">Intervention</span>
-    </nav>
-
+@section('content')
+<div class="space-y-6">
+    <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900" x-text="intervention?.title || 'Chargement...'"></h1>
-            <p class="text-gray-600 mt-1" x-text="intervention?.asset_code || ''"></p>
+            <a href="/maintenance" class="text-sm text-patria-text-secondary hover:text-patria-text">← Toutes les interventions</a>
+            <h1 class="text-2xl font-bold text-patria-green-text mt-2">Le climatiseur ne refroidit plus</h1>
+            <p class="text-sm text-patria-text-secondary mt-1">INT-2026-00086 · PAT-2026-00018 · Climatiseur Daikin</p>
+            <div class="flex gap-2 mt-2">
+                <x-badge variant="warning">En cours</x-badge>
+                <x-badge variant="danger-solid">Corrective</x-badge>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <span class="px-3 py-1.5 rounded-full text-sm font-medium"
-                :class="{
-                    'bg-gray-100 text-gray-800': intervention?.status === 'PLANIFIEE',
-                    'bg-yellow-100 text-yellow-800': intervention?.status === 'EN_COURS',
-                    'bg-green-100 text-green-800': intervention?.status === 'TERMINEE',
-                    'bg-red-100 text-red-800': intervention?.status === 'ANNULEE'
-                }"
-                x-text="intervention?.status"></span>
-            @if (in_array(session('user_role'), ['GESTIONNAIRE', 'ADMIN']))
-                <button
-                    x-show="intervention?.status === 'PLANIFIEE'"
-                    @click="startIntervention()"
-                    class="px-4 py-2 bg-[#0C6744] text-white rounded-lg hover:bg-[#0A5336] transition-colors"
-                >
-                    Démarrer
-                </button>
-                <button
-                    x-show="intervention?.status === 'EN_COURS'"
-                    @click="showCloseModal = true"
-                    class="px-4 py-2 bg-[#0C6744] text-white rounded-lg hover:bg-[#0A5336] transition-colors"
-                >
-                    Clôturer
-                </button>
-                <button
-                    x-show="intervention?.status === 'PLANIFIEE' || intervention?.status === 'EN_COURS'"
-                    @click="cancelIntervention()"
-                    class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                    Annuler
-                </button>
-            @endif
+        <div class="flex gap-3">
+            <x-button variant="secondary" disabled>Démarrer</x-button>
+            <x-button variant="primary" onclick="openCloseModal()">Clôturer</x-button>
+            <x-button variant="secondary">Annuler</x-button>
         </div>
     </div>
 
-    <template x-if="loading">
-        <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <svg class="animate-spin h-8 w-8 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p class="text-gray-500">Chargement...</p>
-        </div>
-    </template>
+    <!-- Main grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left column (wide) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Description card -->
+            <x-card>
+                <h3 class="text-base font-semibold text-patria-green-text mb-4">Description et périmètre</h3>
+                <p class="text-patria-text mb-6">Le climatiseur du bureau 204 ne produit plus d’air froid depuis ce matin. Le ventilateur fonctionne mais la température ne baisse pas.</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-patria-text-secondary">Service</p>
+                        <p class="text-patria-green-text font-medium">Moyens généraux</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-patria-text-secondary">Localisation</p>
+                        <p class="text-patria-green-text font-medium">Bâtiment A · Bureau 204</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-patria-text-secondary">Déclarée par</p>
+                        <p class="text-patria-green-text font-medium">Moussa Ndiaye</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-patria-text-secondary">Type</p>
+                        <p class="text-patria-green-text font-medium">Maintenance corrective</p>
+                    </div>
+                </div>
+            </x-card>
 
-    <template x-if="!loading && intervention">
+            <!-- Cost card -->
+            <x-card>
+                <h3 class="text-base font-semibold text-patria-green-text mb-4">Coût et compte rendu</h3>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-sm text-patria-text-secondary">Prestataire</p>
+                        <p class="text-patria-green-text font-medium">À renseigner à la clôture</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-patria-text-secondary">Coût final</p>
+                        <p class="text-patria-green-text font-medium">Non renseigné</p>
+                    </div>
+                </div>
+                <div class="border-t border-patria-border pt-4">
+                    <p class="text-sm text-patria-text-secondary mb-2">Rapport d’intervention</p>
+                    <p class="text-patria-text-secondary">Le compte rendu sera disponible une fois l’intervention clôturée.</p>
+                    <p class="text-sm text-patria-green-text mt-4">La clôture remettra le bien en service.</p>
+                </div>
+            </x-card>
+        </div>
+
+        <!-- Right column (narrow) -->
         <div class="space-y-6">
-            <!-- Info cards -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500">Type</span>
-                            <span class="font-medium text-gray-900" x-text="intervention.type"></span>
+            <!-- Chronology card -->
+            <x-card>
+                <h3 class="text-base font-semibold text-patria-green-text mb-4">Chronologie</h3>
+                <div class="space-y-6">
+                    <!-- Timeline item 1 -->
+                    <div class="flex gap-3">
+                        <div class="flex flex-col items-center">
+                            <div class="w-3 h-3 rounded-full bg-patria-green"></div>
+                            <div class="w-0.5 h-full bg-patria-green -mt-1"></div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500">Statut</span>
-                            <span class="font-medium text-gray-900" x-text="intervention.status"></span>
+                        <div class="flex-1 pb-6">
+                            <p class="text-xs text-patria-text-secondary">11/11/2026 · 08:15</p>
+                            <p class="text-patria-green-text font-semibold">Panne déclarée</p>
+                            <p class="text-sm text-patria-text-secondary">Par Moussa Ndiaye</p>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500">Date planifiée</span>
-                            <span class="font-medium text-gray-900" x-text="formatDate(intervention.scheduled_date)"></span>
+                    </div>
+                    <!-- Timeline item 2 -->
+                    <div class="flex gap-3">
+                        <div class="flex flex-col items-center">
+                            <div class="w-3 h-3 rounded-full bg-patria-green"></div>
+                            <div class="w-0.5 h-full bg-patria-green -mt-1"></div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500">Début</span>
-                            <span class="font-medium text-gray-900" x-text="formatDate(intervention.started_at)"></span>
+                        <div class="flex-1 pb-6">
+                            <p class="text-xs text-patria-text-secondary">11/11/2026 · 08:15</p>
+                            <p class="text-patria-green-text font-semibold">Intervention démarrée</p>
+                            <p class="text-sm text-patria-text-secondary">Bien passé en maintenance</p>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500">Fin</span>
-                            <span class="font-medium text-gray-900" x-text="formatDate(intervention.ended_at)"></span>
+                    </div>
+                    <!-- Timeline item 3 -->
+                    <div class="flex gap-3">
+                        <div class="flex flex-col items-center">
+                            <div class="w-3 h-3 rounded-full bg-patria-border"></div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500">Signalé par</span>
-                            <span class="font-medium text-gray-900" x-text="intervention.reported_by"></span>
+                        <div class="flex-1">
+                            <p class="text-xs text-patria-text-secondary">À venir</p>
+                            <p class="text-patria-text-secondary font-semibold">Intervention clôturée</p>
+                            <p class="text-sm text-patria-text-secondary">Rapport et coût à renseigner</p>
                         </div>
                     </div>
                 </div>
+            </x-card>
 
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Description</h3>
-                    <p class="text-gray-600" x-text="intervention.description || '-'"></p>
-
-                    <template x-if="intervention.status === 'TERMINEE'">
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <h4 class="font-medium text-gray-900 mb-2">Rapport</h4>
-                            <p class="text-gray-600" x-text="intervention.report || '-'"></p>
-                            <div class="mt-2 text-sm">
-                                <span class="text-gray-500">Coût: </span>
-                                <span class="font-medium" x-text="formatCurrency(intervention.cost)"></span>
-                            </div>
-                            <div class="mt-1 text-sm">
-                                <span class="text-gray-500">Prestataire: </span>
-                                <span class="font-medium" x-text="intervention.provider || '-'"></span>
-                            </div>
-                        </div>
-                    </template>
-                </div>
+            <!-- Warning card -->
+            <div class="bg-patria-gold rounded-lg px-6 py-6">
+                <p class="text-base font-semibold text-patria-text">Bien en maintenance</p>
+                <p class="text-sm text-patria-text mt-2">Ce bien reste indisponible pendant l’intervention. Son statut sera mis à jour lors de la clôture ou de l’annulation.</p>
             </div>
-        </div>
-    </template>
-
-    <!-- Close modal -->
-    <div x-show="showCloseModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-lg mx-4" @click.away="showCloseModal = false">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-900">Clôturer l'intervention</h3>
-                <button @click="showCloseModal = false" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <form @submit.prevent="closeIntervention">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Coût (€)</label>
-                        <input
-                            type="number"
-                            x-model="closeForm.cost"
-                            min="0"
-                            step="0.01"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none"
-                            placeholder="0.00"
-                        >
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Prestataire</label>
-                        <input
-                            type="text"
-                            x-model="closeForm.provider"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none"
-                            placeholder="Nom du prestataire"
-                        >
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Rapport</label>
-                        <textarea
-                            x-model="closeForm.report"
-                            rows="3"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none resize-none"
-                            placeholder="Détails de l'intervention..."
-                        ></textarea>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" @click="showCloseModal = false" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        Annuler
-                    </button>
-                    <button
-                        type="submit"
-                        :disabled="submitting"
-                        class="px-4 py-2 bg-[#0C6744] text-white rounded-lg hover:bg-[#0A5336] transition-colors disabled:opacity-50"
-                    >
-                        <span x-show="!submitting">Clôturer</span>
-                        <span x-show="submitting">Clôture...</span>
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
-<script>
-function interventionDetail(interventionId) {
-    return {
-        loading: true,
-        intervention: null,
-        showCloseModal: false,
-        submitting: false,
-        closeForm: {
-            cost: '',
-            provider: '',
-            report: ''
-        },
+<!-- Close Intervention Modal -->
+<div id="closeModal" class="fixed inset-0 bg-patria-green/30 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-card border border-patria-border p-6 w-full max-w-[720px] mx-4 max-h-[90vh] overflow-y-auto scrollbar-hide" id="closeModalContent" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="text-base font-semibold text-patria-green-text">Clôturer l’intervention</h3>
+            <button onclick="closeCloseModal()" class="text-patria-text-secondary hover:text-patria-text">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <p class="text-patria-text-secondary mb-1">INT-2026-00086 · Climatiseur Daikin</p>
+        <div class="border-t border-patria-border mb-4"></div>
 
-        async loadIntervention() {
-            this.loading = true;
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/interventions/${interventionId}`, {
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                const data = await response.json();
-                this.intervention = data;
-            } catch (error) {
-                console.error('Error loading intervention:', error);
-            } finally {
-                this.loading = false;
-            }
-        },
+        <!-- Prestataire -->
+        <div class="mb-4">
+            <label class="block text-sm text-patria-green-text mb-1">Prestataire</label>
+            <x-input type="text" value="Froid & Services" />
+        </div>
 
-        async startIntervention() {
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/interventions/${interventionId}/start`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
+        <!-- Cost and date -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-sm text-patria-green-text mb-1">Coût total (FCFA) *</label>
+                <x-input type="text" value="85 000" />
+            </div>
+            <div>
+                <label class="block text-sm text-patria-green-text mb-1">Date de clôture</label>
+                <x-input type="text" value="11/11/2026" />
+            </div>
+        </div>
 
-                if (response.ok) {
-                    this.loadIntervention();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erreur lors du démarrage');
-                }
-            } catch (error) {
-                console.error('Error starting intervention:', error);
-                alert('Erreur de connexion');
-            }
-        },
+        <!-- Rapport -->
+        <div class="mb-4">
+            <label class="block text-sm text-patria-green-text mb-1">Rapport d’intervention *</label>
+            <textarea rows="4" class="w-full px-4 py-2.5 border border-patria-border rounded-button focus-visible:ring-2 focus-visible:ring-patria-green focus-visible:border-patria-green outline-none transition-colors resize-none" style="height: 116px;">Contrôle du circuit, remplacement du condensateur et recharge en fluide. Test de fonctionnement conforme.</textarea>
+        </div>
 
-        async closeIntervention() {
-            this.submitting = true;
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/interventions/${interventionId}/close`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.closeForm)
-                });
+        <!-- Info banner -->
+        <div class="bg-patria-green-light rounded-lg px-4 py-3 mb-4">
+            <p class="text-sm font-semibold text-patria-green-text">Le bien sera remis en service.</p>
+            <p class="text-xs text-patria-green-text mt-1">L’intervention clôturée restera consultable dans l’historique.</p>
+        </div>
 
-                if (response.ok) {
-                    this.showCloseModal = false;
-                    this.closeForm = { cost: '', provider: '', report: '' };
-                    this.loadIntervention();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erreur lors de la clôture');
-                }
-            } catch (error) {
-                console.error('Error closing intervention:', error);
-                alert('Erreur de connexion');
-            } finally {
-                this.submitting = false;
-            }
-        },
+        <!-- Footer -->
+        <div class="border-t border-patria-border pt-3">
+            <div class="flex justify-end gap-3">
+                <x-button variant="secondary" onclick="closeCloseModal()">Annuler</x-button>
+                <x-button variant="primary">Confirmer la clôture</x-button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        async cancelIntervention() {
-            if (!confirm('Êtes-vous sûr de vouloir annuler cette intervention ?')) return;
-
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/interventions/${interventionId}/cancel`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    this.loadIntervention();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erreur lors de l\'annulation');
-                }
-            } catch (error) {
-                console.error('Error cancelling intervention:', error);
-                alert('Erreur de connexion');
-            }
-        },
-
-        formatCurrency(value) {
-            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
-        },
-
-        formatDate(date) {
-            if (!date) return '-';
-            return new Date(date).toLocaleDateString('fr-FR');
-        },
-
-        init() {
-            this.loadIntervention();
-        }
+<style>
+@media (max-height: 800px) {
+    #closeModalContent {
+        max-width: 640px !important;
+        padding: 1rem 1.75rem !important;
+    }
+    #closeModalContent > .flex.mb-1 {
+        margin-bottom: 0.25rem !important;
+    }
+    #closeModalContent > p.text-patria-text-secondary {
+        margin-bottom: 0.25rem !important;
+    }
+    #closeModalContent > .border-t {
+        margin-bottom: 0.75rem !important;
+    }
+    #closeModalContent > div.mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+    #closeModalContent label {
+        margin-bottom: 0.25rem !important;
+    }
+    #closeModalContent input {
+        height: 2.5rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+    #closeModalContent textarea {
+        height: 5.25rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+    #closeModalContent .border-t.pt-3 {
+        padding-top: 0.5rem !important;
+        margin-top: 0.5rem !important;
+    }
+    #closeModalContent button {
+        height: 2.375rem !important;
     }
 }
+</style>
+
+<script>
+function openCloseModal() {
+    document.getElementById('closeModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCloseModal() {
+    document.getElementById('closeModal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('closeModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCloseModal();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCloseModal();
+    }
+});
 </script>
 @endsection

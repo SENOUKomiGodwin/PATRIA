@@ -1,17 +1,22 @@
 @props([
-    'status' => 'default',
+    'variant' => 'default',
 ])
 
 @php
 $statuses = [
-    'success' => 'bg-green-100 text-green-800',
-    'warning' => 'bg-patria-gold/20 text-patria-gold',
+    'success' => 'bg-patria-green-light text-patria-green-text',
+    'warning' => 'bg-patria-gold text-patria-text',
     'danger' => 'bg-patria-red/10 text-patria-red',
+    'danger-solid' => 'bg-patria-red text-white',
     'info' => 'bg-blue-100 text-blue-800',
-    'default' => 'bg-gray-100 text-gray-800',
+    'default' => 'bg-patria-bg text-patria-text-secondary',
 ];
 
-$classes = 'px-2 py-1 rounded-full text-xs font-medium ' . $statuses[$status];
+$classes = 'px-2 py-1 rounded-md text-xs font-medium ' . $statuses[$variant];
+
+if ($variant === 'warning') {
+    $classes .= ' px-3.5 font-semibold min-h-7';
+}
 @endphp
 
 <span {{ $attributes->merge(['class' => $classes]) }}>

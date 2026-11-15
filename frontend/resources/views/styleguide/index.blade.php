@@ -6,12 +6,12 @@
 <div class="space-y-8">
     <div>
         <h1 class="text-2xl font-bold text-patria-text">Style Guide PATRIA</h1>
-        <p class="text-patria-text-secondary mt-1">Composants réutilisables</p>
+        <p class="text-sm text-patria-text-secondary mt-1">Composants réutilisables</p>
     </div>
 
     <!-- Colors -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Couleurs</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Couleurs</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
                 <div class="w-full h-16 bg-patria-green rounded-card mb-2"></div>
@@ -48,7 +48,7 @@
 
     <!-- Buttons -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Boutons</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Boutons</h2>
         <div class="flex flex-wrap gap-4">
             <x-button>Primaire</x-button>
             <x-button variant="secondary">Secondaire</x-button>
@@ -62,7 +62,7 @@
 
     <!-- Badges -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Badges</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Badges</h2>
         <div class="flex flex-wrap gap-4">
             <x-badge status="success">Succès</x-badge>
             <x-badge status="warning">Alerte</x-badge>
@@ -74,7 +74,7 @@
 
     <!-- Inputs -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Champs</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Champs</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <x-input label="Email" type="email" placeholder="nom@patrimoine.gov" />
             <x-input label="Mot de passe" type="password" placeholder="********" />
@@ -93,7 +93,7 @@
 
     <!-- Cards -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Cartes</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Cartes</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <x-card>
                 <h3 class="font-semibold text-patria-text">Carte simple</h3>
@@ -107,10 +107,10 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-patria-text-secondary">Total des biens</p>
-                        <p class="text-3xl font-bold text-patria-green">1 248</p>
+                        <p class="text-3xl font-bold text-patria-green-text">1 248</p>
                     </div>
                     <div class="w-12 h-12 bg-patria-green/10 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-patria-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-patria-green-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                         </svg>
                     </div>
@@ -121,19 +121,19 @@
 
     <!-- Table -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Tableau</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Tableau</h2>
         <x-table :headers="['Date', 'Bien', 'Type', 'Destination', 'Auteur']">
             <tr class="border-b border-patria-border">
                 <td class="px-6 py-4 text-patria-text">11/11/2026</td>
                 <td class="px-6 py-4 text-patria-text">PAT-2026-00001 · Toyota Hilux</td>
-                <td class="px-6 py-4 text-patria-green">Transfert</td>
+                <td class="px-6 py-4 text-patria-green-text">Transfert</td>
                 <td class="px-6 py-4 text-patria-text-secondary">Service logistique</td>
                 <td class="px-6 py-4 text-patria-text-secondary">A. Diallo</td>
             </tr>
             <tr class="border-b border-patria-border">
                 <td class="px-6 py-4 text-patria-text">10/11/2026</td>
                 <td class="px-6 py-4 text-patria-text">PAT-2026-00024 · Bureau double</td>
-                <td class="px-6 py-4 text-patria-green">Affectation</td>
+                <td class="px-6 py-4 text-patria-green-text">Affectation</td>
                 <td class="px-6 py-4 text-patria-text-secondary">Direction financière</td>
                 <td class="px-6 py-4 text-patria-text-secondary">M. Ndiaye</td>
             </tr>
@@ -142,7 +142,7 @@
 
     <!-- Modal -->
     <x-card>
-        <h2 class="text-lg font-semibold text-patria-text mb-4">Modale</h2>
+        <h2 class="text-base font-semibold text-patria-text mb-4">Modale</h2>
         <x-button @click="show = true">Ouvrir modale</x-button>
         <x-modal title="Exemple de modale" :show="false">
             <p class="text-patria-text-secondary">Contenu de la modale</p>

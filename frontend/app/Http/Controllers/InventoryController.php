@@ -15,4 +15,9 @@ class InventoryController extends Controller
     {
         return view('inventories.show', ['id' => $id]);
     }
+
+    public function report($id)
+    {
+        return view('inventories.report', ['id' => $id]);
+    }
 }

@@ -44,6 +44,7 @@ Route::middleware(['auth.session'])->group(function () {
     Route::prefix('inventaires')->name('inventories.')->group(function () {
         Route::get('/', [InventoryController::class, 'index'])->name('index');
         Route::get('/{id}', [InventoryController::class, 'show'])->name('show');
+        Route::get('/{id}/rapport', [InventoryController::class, 'report'])->name('report');
     });
 
     // Maintenance
@@ -55,7 +56,7 @@ Route::middleware(['auth.session'])->group(function () {
 
     // Reports
     Route::prefix('rapports')->name('reports.')->group(function () {
-        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/', [ReportController::class, 'depreciation'])->name('index');
         Route::get('/amortissement', [ReportController::class, 'depreciation'])->name('depreciation');
         Route::get('/exports', [ReportController::class, 'exports'])->name('exports');
     });

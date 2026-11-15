@@ -12,6 +12,9 @@
     /* PATRIA Design Tokens */
     --color-patria-green: #0C6744;
     --color-patria-green-interface: #1E8E5A;
+    --color-patria-green-button: #208658;
+    --color-patria-green-text: #208658;
+    --color-patria-green-light: #E8F2EC;
     --color-patria-gold: #F2B705;
     --color-patria-red: #C62828;
     --color-patria-bg: #F5F7FA;
@@ -20,6 +23,7 @@
     --color-patria-text-secondary: #6B7280;
     --color-patria-sidebar-dark: #006A4A;
     --color-patria-badge: #218051;
+    --color-patria-sage: #9FA99C;
 
     /* Donut segments */
     --color-donut-1: #1E8E5A;
@@ -33,10 +37,244 @@
     --color-gradient-panel-end: #7A5C00;
     --color-gradient-button-start: #2D753A;
     --color-gradient-button-end: #D7B305;
+    --color-gradient-login-start: #0C6744;
+    --color-gradient-login-end: #F2B705;
+    --color-patria-login-title: #076946;
     --color-sidebar-start: #0C6744;
     --color-sidebar-end: #7A5C00;
 
     /* Border radius */
     --radius-button: 6px;
     --radius-card: 8px;
+}
+
+/* Select styling */
+select option {
+    color: var(--color-patria-text);
+}
+
+select option[value=""],
+select option:first-child {
+    color: var(--color-patria-text-secondary);
+}
+
+/* Scrollbar hide */
+.scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Alpine.js x-cloak */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Shared table: separators inset 20px from card edges */
+.patria-table thead tr,
+.patria-table tbody tr:not(:last-child) {
+    border-bottom: none;
+    background-image: linear-gradient(
+        to right,
+        transparent 0,
+        transparent 20px,
+        var(--color-patria-border) 20px,
+        var(--color-patria-border) calc(100% - 20px),
+        transparent calc(100% - 20px)
+    );
+    background-size: 100% 1px;
+    background-position: bottom;
+    background-repeat: no-repeat;
+}
+
+.patria-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* compact: 28px rows, 32px header band, 12px text (dashboard) */
+.patria-table-compact thead th {
+    font-size: 12px;
+    font-weight: 600;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.patria-table-compact tbody td {
+    font-size: 12px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+/* standard: 65px rows, 46px header band, 13px text (lists) */
+.patria-table-standard thead th {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+
+.patria-table-standard tbody td {
+    font-size: 13px;
+    line-height: 20px;
+    padding-top: 22px;
+    padding-bottom: 23px;
+}
+
+/* Sidebar compaction on short windows */
+@media (max-height: 800px) {
+    .sidebar-nav {
+        gap: 0.375rem !important;
+    }
+
+    .sidebar-nav a {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+}
+
+/* Login submit button: green → gold horizontal gradient */
+.bg-login-gradient {
+    background-image: linear-gradient(
+        90deg,
+        var(--color-gradient-login-start),
+        var(--color-gradient-login-end)
+    );
+}
+
+/* Login form column: 552px max, 104px side margins, 360px floor */
+.login-col {
+    width: 100%;
+    max-width: 552px;
+    min-width: 360px;
+}
+
+/* Login page: compact layout on short windows */
+@media (max-height: 800px) {
+    .login-panel {
+        padding: 32px !important;
+    }
+
+    .login-panel-right {
+        padding-top: 32px !important;
+        padding-bottom: 32px !important;
+    }
+
+    .login-logo {
+        margin-bottom: 16px !important;
+    }
+
+    .login-title {
+        font-size: 36px !important;
+        line-height: 1.2 !important;
+    }
+
+    .login-subtitle {
+        font-size: 16px !important;
+    }
+
+    .login-tagline {
+        font-size: 16px !important;
+    }
+
+    .login-num {
+        font-size: 24px !important;
+    }
+
+    .login-label {
+        font-size: 12px !important;
+    }
+
+    .login-stack {
+        gap: 20px !important;
+    }
+
+    .login-pillars {
+        padding-top: 20px !important;
+    }
+}
+
+/* Login form: focus ring only for keyboard navigation */
+.login-form input:focus,
+.login-form input:focus-visible {
+    border-color: var(--color-patria-border) !important;
+    box-shadow: none !important;
+}
+
+.login-form[data-kb] input:focus-visible {
+    border-color: var(--color-patria-green) !important;
+    box-shadow: 0 0 0 2px var(--color-patria-green) !important;
+}
+
+/* Modal responsive for low-height windows */
+@media (max-height: 800px) {
+    .modal-content {
+        padding: 1rem 1.75rem !important;
+        max-width: 640px !important;
+    }
+    
+    .modal-content > div > .mb-6 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .modal-content > div > .mb-4 {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .modal-content > div > .mb-2 {
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .modal-content > div > .mb-1 {
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .modal-content label {
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .modal-content .modal-footer {
+        padding-top: 0.75rem !important;
+    }
+    
+    .modal-content textarea {
+        min-height: 2.5rem !important;
+        max-height: 2.5rem !important;
+        padding: 0.375rem !important;
+    }
+    
+    .modal-content .grid-cols-4 {
+        gap: 0.25rem !important;
+    }
+    
+    .modal-content .grid-cols-2 {
+        gap: 1.25rem !important;
+    }
+    
+    .modal-content input,
+    .modal-content select {
+        min-height: 2.5rem !important;
+        padding: 0.375rem !important;
+    }
+    
+    .modal-content .grid-cols-4 button {
+        min-height: 2.5rem !important;
+        padding: 0.375rem !important;
+    }
+    
+    .modal-content button {
+        min-height: 2.375rem !important;
+    }
+    
+    .modal-content {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .modal-content::-webkit-scrollbar {
+        display: none;
+    }
 }

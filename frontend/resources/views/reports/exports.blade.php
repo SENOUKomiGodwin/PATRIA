@@ -1,196 +1,143 @@
-@extends('layouts.app')
+@extends('components.layout-app')
 
-@section('title', 'Exports')
-@section 'content'
+@section('title', "Exports et historique")
 
-<div class="space-y-6" x-data="exportsPage()">
-    <nav class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="{{ route('dashboard') }}" class="hover:text-gray-900">Accueil</a>
-        <span>/</span>
-        <a href="{{ route('reports.index') }}" class="hover:text-gray-900">Rapports</a>
-        <span>/</span>
-        <span class="text-gray-900">Exports</span>
-    </nav>
-
+@section('content')
+<div class="space-y-6">
+    <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Exports</h1>
-            <p class="text-gray-600 mt-1">Télécharger les données</p>
+            <h1 class="text-2xl font-bold text-patria-green-text">Exports et historique</h1>
+            <p class="text-sm text-patria-text-secondary mt-1">Générez des rapports officiels pour partager et archiver vos données.</p>
         </div>
+        <span class="px-3 py-1 bg-patria-green-light text-patria-green-text text-sm rounded-full">Données de démonstration</span>
     </div>
 
-    <!-- Export options -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 class="font-semibold text-gray-900 mb-4">Biens</h3>
-            <div class="space-y-2">
-                <button @click="exportData('assets', 'pdf')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export PDF
-                </button>
-                <button @click="exportData('assets', 'xlsx')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export Excel
-                </button>
+    <!-- Export Cards Grid -->
+    <div class="grid grid-cols-2 gap-6">
+        <!-- Biens -->
+        <x-card>
+            <h3 class="text-base font-semibold text-patria-green-text mb-2">Biens</h3>
+            <p class="text-sm text-patria-text-secondary mb-2">Catalogue, affectations et valeurs comptables.</p>
+            <p class="text-xs text-patria-text-secondary mb-4">1 248 biens</p>
+            <div class="flex gap-3">
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    PDF
+                </x-button>
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Excel
+                </x-button>
             </div>
-        </div>
+        </x-card>
 
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 class="font-semibold text-gray-900 mb-4">Mouvements</h3>
-            <div class="space-y-2">
-                <button @click="exportData('movements', 'pdf')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export PDF
-                </button>
-                <button @click="exportData('movements', 'xlsx')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export Excel
-                </button>
+        <!-- Mouvements -->
+        <x-card>
+            <h3 class="text-base font-semibold text-patria-green-text mb-2">Mouvements</h3>
+            <p class="text-sm text-patria-text-secondary mb-2">Journal des affectations, transferts et sorties.</p>
+            <p class="text-xs text-patria-text-secondary mb-4">128 mouvements · novembre</p>
+            <div class="flex gap-3">
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    PDF
+                </x-button>
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Excel
+                </x-button>
             </div>
-        </div>
+        </x-card>
 
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 class="font-semibold text-gray-900 mb-4">Inventaires</h3>
-            <div class="space-y-2">
-                <button @click="exportData('inventory', 'pdf')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export PDF
-                </button>
-                <button @click="exportData('inventory', 'xlsx')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export Excel
-                </button>
+        <!-- Inventaire -->
+        <x-card>
+            <h3 class="text-base font-semibold text-patria-green-text mb-2">Inventaire</h3>
+            <p class="text-sm text-patria-text-secondary mb-2">Comptages et écarts de la dernière campagne.</p>
+            <p class="text-xs text-patria-text-secondary mb-4">Octobre 2026 · campagne clôturée</p>
+            <div class="flex gap-3">
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    PDF
+                </x-button>
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Excel
+                </x-button>
             </div>
-        </div>
+        </x-card>
 
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 class="font-semibold text-gray-900 mb-4">Maintenance</h3>
-            <div class="space-y-2">
-                <button @click="exportData('maintenance', 'pdf')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export PDF
-                </button>
-                <button @click="exportData('maintenance', 'xlsx')" class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                    Export Excel
-                </button>
+        <!-- Maintenance -->
+        <x-card>
+            <h3 class="text-base font-semibold text-patria-green-text mb-2">Maintenance</h3>
+            <p class="text-sm text-patria-text-secondary mb-2">Interventions, coûts et suivi des équipements.</p>
+            <p class="text-xs text-patria-text-secondary mb-4">Exercice 2026</p>
+            <div class="flex gap-3">
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    PDF
+                </x-button>
+                <x-button variant="secondary" size="xs" class="gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Excel
+                </x-button>
             </div>
-        </div>
+        </x-card>
     </div>
 
-    <!-- Export history -->
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Historique des exports</h3>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="text-left text-sm text-gray-500 border-b border-gray-200">
-                        <th class="pb-3 font-medium">Type</th>
-                        <th class="pb-3 font-medium">Format</th>
-                        <th class="pb-3 font-medium">Filtres</th>
-                        <th class="pb-3 font-medium">Date</th>
-                        <th class="pb-3 font-medium">Par</th>
-                        <th class="pb-3 font-medium text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm">
-                    <template x-if="loading">
-                        <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                <svg class="animate-spin h-6 w-6 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Chargement...
-                            </td>
-                        </tr>
-                    </template>
-                    <template x-if="!loading && exports.length === 0">
-                        <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                Aucun export
-                            </td>
-                        </tr>
-                    </template>
-                    <template x-for="export in exports" :key="export.id">
-                        <tr class="border-b border-gray-100">
-                            <td class="px-6 py-4 font-medium text-gray-900" x-text="export.type"></td>
-                            <td class="px-6 py-4">
-                                <span class="px-2 py-1 rounded-full text-xs font-medium"
-                                    :class="{
-                                        'bg-red-100 text-red-800': export.format === 'pdf',
-                                        'bg-green-100 text-green-800': export.format === 'xlsx'
-                                    }"
-                                    x-text="export.format.toUpperCase()"></span>
-                            </td>
-                            <td class="px-6 py-4 text-gray-600 text-xs" x-text="JSON.stringify(export.filters)"></td>
-                            <td class="px-6 py-4 text-gray-600" x-text="formatDate(export.created_at)"></td>
-                            <td class="px-6 py-4 text-gray-600" x-text="export.requested_by"></td>
-                            <td class="px-6 py-4 text-right">
-                                <a :href="export.file_url" class="text-[#0C6744] hover:underline text-sm">Télécharger</a>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+    <!-- Recent Exports Section -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-base font-semibold text-patria-green-text">Derniers exports</h3>
+            <p class="text-sm text-patria-text-secondary mt-1">Les exports sont tracés et limités à votre périmètre d’accès.</p>
         </div>
+
+        <x-card>
+            <x-table variant="compact" :headers="['Date', 'Type de rapport', 'Format', 'Utilisateur', '']">
+                <tr class="border-b border-patria-border">
+                    <td class="px-6 py-4">11/11/2026 · 09:20</td>
+                    <td class="px-6 py-4">Biens</td>
+                    <td class="px-6 py-4">Excel</td>
+                    <td class="px-6 py-4">Aminata Diallo</td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="text-patria-green-text hover:underline">Télécharger ↓</a>
+                    </td>
+                </tr>
+                <tr class="border-b border-patria-border">
+                    <td class="px-6 py-4">10/11/2026 · 16:45</td>
+                    <td class="px-6 py-4">Inventaire</td>
+                    <td class="px-6 py-4">PDF</td>
+                    <td class="px-6 py-4">Fatou Diop</td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="text-patria-green-text hover:underline">Télécharger ↓</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4">08/11/2026 · 11:32</td>
+                    <td class="px-6 py-4">Maintenance</td>
+                    <td class="px-6 py-4">PDF</td>
+                    <td class="px-6 py-4">Moussa Ndiaye</td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="text-patria-green-text hover:underline">Télécharger ↓</a>
+                    </td>
+                </tr>
+            </x-table>
+        </x-card>
     </div>
 </div>
-
-<script>
-function exportsPage() {
-    return {
-        loading: false,
-        exports: [],
-
-        async loadExports() {
-            this.loading = true;
-            try {
-                const response = await fetch('{{ env('API_URL') }}/api/reports/exports', {
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                const data = await response.json();
-                this.exports = data.data || [];
-            } catch (error) {
-                console.error('Error loading exports:', error);
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async exportData(type, format) {
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/reports/exports/${type}?format=${format}`, {
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                    }
-                });
-
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${type}_export.${format}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                    this.loadExports();
-                } else {
-                    alert('Erreur lors de l\'export');
-                }
-            } catch (error) {
-                console.error('Error exporting:', error);
-                alert('Erreur de connexion');
-            }
-        },
-
-        formatDate(date) {
-            if (!date) return '-';
-            return new Date(date).toLocaleDateString('fr-FR');
-        },
-
-        init() {
-            this.loadExports();
-        }
-    }
-}
-</script>
 @endsection

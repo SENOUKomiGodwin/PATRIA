@@ -1,253 +1,104 @@
-@extends('layouts.app')
+@extends('components.layout-app')
 
-@section('title', 'Détail campagne')
-@section 'content'
+@section('title', "Comptage d’inventaire")
 
-<div class="space-y-6" x-data="inventoryDetail('{{ $id }}')">
-    <nav class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="{{ route('dashboard') }}" class="hover:text-gray-900">Accueil</a>
-        <span>/</span>
-        <a href="{{ route('inventories.index') }}" class="hover:text-gray-900">Inventaires</a>
-        <span>/</span>
-        <span class="text-gray-900">Détail</span>
-    </nav>
+@section('content')
+<div class="space-y-6">
+    <!-- Back link -->
+    <div class="mb-6">
+        <a href="{{ route('inventories.index') }}" class="text-sm text-patria-text-secondary hover:text-patria-text">← Toutes les campagnes</a>
+    </div>
 
-    <div class="flex items-center justify-between">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900" x-text="campaign?.title || 'Chargement...'"></h1>
-            <p class="text-gray-600 mt-1" x-text="campaign?.description || ''"></p>
+            <h1 class="text-2xl font-bold text-patria-green-text">Inventaire · Novembre 2026</h1>
+            <p class="text-sm text-patria-text-secondary mt-1">Administration centrale · Du 1 au 30 novembre 2026</p>
+            <div class="mt-2">
+                <x-badge variant="warning">Ouverte</x-badge>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <span class="px-3 py-1.5 rounded-full text-sm font-medium"
-                :class="{
-                    'bg-green-100 text-green-800': campaign?.status === 'OUVERTE',
-                    'bg-gray-100 text-gray-800': campaign?.status === 'CLOTUREE'
-                }"
-                x-text="campaign?.status"></span>
-            @if (in_array(session('user_role'), ['ADMIN', 'GESTIONNAIRE']))
-                <button
-                    x-show="campaign?.status === 'OUVERTE'"
-                    @click="closeCampaign()"
-                    class="px-4 py-2 bg-[#0C6744] text-white rounded-lg hover:bg-[#0A5336] transition-colors"
-                >
-                    Clôturer
-                </button>
-            @endif
+        <div class="flex gap-3">
+            <a href="/inventaires/1/rapport" class="px-4 py-2 border border-patria-border text-patria-green-text rounded-button hover:bg-patria-bg transition-colors font-semibold text-sm">Voir le rapport</a>
+            <x-button variant="secondary">Clôturer la campagne</x-button>
         </div>
     </div>
 
-    <template x-if="loading">
-        <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <svg class="animate-spin h-8 w-8 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p class="text-gray-500">Chargement...</p>
+    <!-- Progress card -->
+    <x-card>
+        <div class="flex items-center justify-between mb-4">
+            <p class="text-patria-green-text font-semibold">172 biens comptés sur 240</p>
+            <p class="text-patria-green-text">72 %</p>
         </div>
-    </template>
+        <div class="w-full h-2 bg-patria-green/10 rounded-full overflow-hidden mb-4">
+            <div class="h-full bg-patria-green" style="width: 72%"></div>
+        </div>
+        <p class="text-sm text-patria-text-secondary">161 conformes · 11 écarts · 68 biens restant à compter</p>
+    </x-card>
 
-    <template x-if="!loading && campaign">
-        <div class="space-y-6">
-            <!-- Stats cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <p class="text-sm text-gray-500 mb-1">Biens comptés</p>
-                    <p class="text-3xl font-bold text-gray-900" x-text="campaign.counted_count || 0"></p>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <p class="text-sm text-gray-500 mb-1">Conformes</p>
-                    <p class="text-3xl font-bold text-green-600" x-text="campaign.conform_count || 0"></p>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <p class="text-sm text-gray-500 mb-1">Écarts</p>
-                    <p class="text-3xl font-bold text-[#F2B705]" x-text="campaign.discrepancy_count || 0"></p>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <p class="text-sm text-gray-500 mb-1">Manquants</p>
-                    <p class="text-3xl font-bold text-[#C62828]" x-text="campaign.missing_count || 0"></p>
-                </div>
+    <!-- Registration card -->
+    <x-card>
+        <h3 class="text-base font-semibold text-patria-green-text mb-4">Enregistrer un comptage</h3>
+        <div class="flex items-end gap-6">
+            <div class="flex-1">
+                <label class="block text-sm text-patria-green-text mb-1">Code du bien scanné *</label>
+                <x-input type="text" value="PAT-2026-00024" />
             </div>
-
-            <!-- Add line form (if open) -->
-            <div x-show="campaign.status === 'OUVERTE'" class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Compter un bien</h3>
-                <form @submit.prevent="addLine" class="flex gap-4">
-                    <div class="flex-1">
-                        <input
-                            type="text"
-                            x-model="lineForm.asset_code"
-                            required
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none"
-                            placeholder="Code du bien"
-                        >
-                    </div>
-                    <div class="flex-1">
-                        <input
-                            type="text"
-                            x-model="lineForm.found_location_id"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0C6744] focus:border-[#0C6744] outline-none"
-                            placeholder="Emplacement trouvé"
-                        >
-                    </div>
-                    <button
-                        type="submit"
-                        :disabled="submittingLine"
-                        class="px-4 py-2 bg-[#0C6744] text-white rounded-lg hover:bg-[#0A5336] transition-colors disabled:opacity-50"
-                    >
-                        Ajouter
-                    </button>
-                </form>
+            <div class="flex-1">
+                <label class="block text-sm text-patria-green-text mb-1">Localisation constatée *</label>
+                <x-select>
+                    <option value="Bâtiment A · Bureau 204">Bâtiment A · Bureau 204</option>
+                </x-select>
             </div>
-
-            <!-- Discrepancies -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Écarts et manquants</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="text-left text-sm text-gray-500 border-b border-gray-200">
-                                <th class="pb-3 font-medium">Code bien</th>
-                                <th class="pb-3 font-medium">Désignation</th>
-                                <th class="pb-3 font-medium">Résultat</th>
-                                <th class="pb-3 font-medium">Emplacement attendu</th>
-                                <th class="pb-3 font-medium">Emplacement trouvé</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm">
-                            <template x-if="discrepancies.length === 0">
-                                <tr>
-                                    <td colspan="5" class="py-8 text-center text-gray-500">Aucun écart</td>
-                                </tr>
-                            </template>
-                            <template x-for="line in discrepancies" :key="line.id">
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-3 font-medium text-gray-900" x-text="line.asset_code"></td>
-                                    <td class="py-3 text-gray-600" x-text="line.asset_designation"></td>
-                                    <td class="py-3">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium"
-                                            :class="{
-                                                'bg-green-100 text-green-800': line.result === 'CONFORME',
-                                                'bg-yellow-100 text-yellow-800': line.result === 'ECART',
-                                                'bg-red-100 text-red-800': line.result === 'MANQUANT'
-                                            }"
-                                            x-text="line.result"></span>
-                                    </td>
-                                    <td class="py-3 text-gray-600" x-text="line.expected_location || '-'"></td>
-                                    <td class="py-3 text-gray-600" x-text="line.found_location || '-'"></td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
+            <div>
+                <x-button variant="primary-dark" size="md">Enregistrer</x-button>
             </div>
         </div>
-    </template>
+        <p class="text-sm text-patria-text-secondary mt-4">Scannez l’étiquette QR ou saisissez le code manuellement.</p>
+    </x-card>
+
+    <!-- Recent items -->
+    <h3 class="text-base font-semibold text-patria-green-text mb-4">Derniers biens comptés</h3>
+    <x-card>
+        <x-table variant="compact" :headers="['Code', 'Bien', 'Lieu attendu', 'Lieu constaté', 'Résultat']">
+                <tr class="border-b border-patria-border/50 hover:bg-patria-bg/50">
+                    <td class="px-6 py-4 text-patria-green-text">PAT-2026-00024</td>
+                    <td class="px-6 py-4">Bureau double</td>
+                    <td class="px-6 py-4">Bureau 204</td>
+                    <td class="px-6 py-4">Bureau 204</td>
+                    <td class="px-6 py-4 text-patria-green-text">Conforme</td>
+                </tr>
+                <tr class="border-b border-patria-border/50 hover:bg-patria-bg/50">
+                    <td class="px-6 py-4 text-patria-green-text">PAT-2026-00042</td>
+                    <td class="px-6 py-4">Dell Latitude 5440</td>
+                    <td class="px-6 py-4">Bureau 102</td>
+                    <td class="px-6 py-4">Bureau 204</td>
+                    <td class="px-6 py-4"><x-badge variant="warning">Écart</x-badge></td>
+                </tr>
+                <tr class="border-b border-patria-border/50 hover:bg-patria-bg/50">
+                    <td class="px-6 py-4 text-patria-green-text">PAT-2026-00001</td>
+                    <td class="px-6 py-4">Toyota Hilux 2.4 D</td>
+                    <td class="px-6 py-4">Parc automobile</td>
+                    <td class="px-6 py-4">Parc automobile</td>
+                    <td class="px-6 py-4 text-patria-green-text">Conforme</td>
+                </tr>
+                <tr class="hover:bg-patria-bg/50">
+                    <td class="px-6 py-4 text-patria-green-text">PAT-2026-00083</td>
+                    <td class="px-6 py-4">Onduleur APC</td>
+                    <td class="px-6 py-4">Salle serveurs</td>
+                    <td class="px-6 py-4">Salle serveurs</td>
+                    <td class="px-6 py-4 text-patria-green-text">Conforme</td>
+                </tr>
+        </x-table>
+        <!-- Table footer -->
+        <div class="flex items-center justify-between px-6 py-4 border-t border-patria-border">
+            <p class="text-sm text-patria-text-secondary">Affichage de 1 à 4 · Tri : plus récent</p>
+            <div class="flex items-center gap-2">
+                <button class="text-patria-green-text hover:underline px-2 py-1">← Précédent</button>
+                <button class="text-patria-green-text font-semibold px-2 py-1">1</button>
+                <button class="text-patria-green-text hover:underline px-2 py-1">Suivant →</button>
+            </div>
+        </div>
+    </x-card>
 </div>
-
-<script>
-function inventoryDetail(campaignId) {
-    return {
-        loading: true,
-        campaign: null,
-        discrepancies: [],
-        submittingLine: false,
-        lineForm: {
-            asset_code: '',
-            found_location_id: ''
-        },
-
-        async loadCampaign() {
-            this.loading = true;
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/campaigns/${campaignId}`, {
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                const data = await response.json();
-                this.campaign = data;
-            } catch (error) {
-                console.error('Error loading campaign:', error);
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async loadDiscrepancies() {
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/campaigns/${campaignId}/discrepancies`, {
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                const data = await response.json();
-                this.discrepancies = data.data || [];
-            } catch (error) {
-                console.error('Error loading discrepancies:', error);
-            }
-        },
-
-        async addLine() {
-            this.submittingLine = true;
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/campaigns/${campaignId}/lines`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.lineForm)
-                });
-
-                if (response.ok) {
-                    this.lineForm = { asset_code: '', found_location_id: '' };
-                    this.loadCampaign();
-                    this.loadDiscrepancies();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erreur lors de l\'ajout');
-                }
-            } catch (error) {
-                console.error('Error adding line:', error);
-                alert('Erreur de connexion');
-            } finally {
-                this.submittingLine = false;
-            }
-        },
-
-        async closeCampaign() {
-            if (!confirm('Êtes-vous sûr de vouloir clôturer cette campagne ?')) return;
-
-            try {
-                const response = await fetch(`{{ env('API_URL') }}/api/campaigns/${campaignId}/close`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer {{ session('jwt_token') }}`,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    this.loadCampaign();
-                    this.loadDiscrepancies();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erreur lors de la clôture');
-                }
-            } catch (error) {
-                console.error('Error closing campaign:', error);
-                alert('Erreur de connexion');
-            }
-        },
-
-        init() {
-            this.loadCampaign();
-            this.loadDiscrepancies();
-        }
-    }
-}
-</script>
 @endsection

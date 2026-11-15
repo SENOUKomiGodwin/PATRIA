@@ -85,7 +85,7 @@
             <!-- Help link -->
             <div class="p-4 border-t border-white/10">
                 <a href="#" x-show="sidebarOpen" class="text-xs text-white/80 hover:text-white transition-colors">
-                    Besoin d'aide ? Consulter le guide d'utilisation →
+                    Besoin d’aide ? Consulter le guide d’utilisation →
                 </a>
             </div>
 
@@ -99,7 +99,7 @@
             <header class="bg-white border-b border-gray-200 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900">Gestion du patrimoine public</h2>
+                        <h2 class="text-base font-semibold text-gray-900">Gestion du patrimoine public</h2>
                         <p class="text-sm text-gray-500 mt-0.5">
                             {{ session('user_service') ?? 'Service général' }} · {{ session('user_name') ?? 'Utilisateur' }} · {{ session('user_role') ?? 'Invité' }}
                         </p>
