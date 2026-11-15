@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'asset_service' => [
+        'url' => env('ASSET_SERVICE_URL', 'http://localhost:8000'),
+    ],
+
 ];
