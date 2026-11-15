@@ -1,7 +1,5 @@
 name: patria
 
-version: '3.8'
-
 x-laravel-env: &laravel-env
   APP_ENV: ${APP_ENV:-production}
   APP_DEBUG: ${APP_DEBUG:-false}
@@ -12,6 +10,7 @@ x-laravel-env: &laravel-env
   DB_USERNAME: ${POSTGRES_USER}
   DB_PASSWORD: ${POSTGRES_PASSWORD}
   JWT_SECRET: ${JWT_SECRET}
+  JWT_TTL: ${JWT_TTL:-480}
 
 services:
   # PostgreSQL - 1 conteneur, 6 bases de données
