@@ -35,4 +35,20 @@ return [
         ],
     ],
 
+    'asset_service' => [
+        'url' => env('ASSET_SERVICE_URL', 'http://localhost:8000'),
+    ],
+
+    'movement_service' => [
+        'url' => env('MOVEMENT_SERVICE_URL', 'http://localhost:8001'),
+    ],
+
+    'inventory_service' => [
+        'url' => env('INVENTORY_SERVICE_URL', 'http://localhost:8002'),
+    ],
+
+    'maintenance_service' => [
+        'url' => env('MAINTENANCE_SERVICE_URL', 'http://localhost:8003'),
+    ],
+
 ];
