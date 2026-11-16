@@ -13,7 +13,7 @@ services:
   - type: web
     name: patria
     runtime: docker
-    dockerfilePath: ./deploy/all-in-one/Dockerfile
+    dockerfilePath: deploy/all-in-one/Dockerfile
     dockerContext: .
     region: frankfurt # même région que Neon (aws-eu-central-1)
     plan: free # endort le service après inactivité (cold start ~1 min) ;
