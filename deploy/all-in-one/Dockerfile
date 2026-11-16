@@ -61,8 +61,9 @@ RUN set -e; \
 # Configuration nginx passerelle + script de démarrage + .env par application
 COPY deploy/all-in-one/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/all-in-one/start.sh /usr/local/bin/start.sh
+# Cache bust: env v4 (2026-11-16) - APP_URL for internal API calls
 COPY deploy/all-in-one/env /app/deploy/all-in-one/env
-RUN chmod +x /usr/local/bin/start.sh && touch /app/deploy/all-in-one/env/.cache-bust-${BUILD_VERSION}
+RUN chmod +x /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh \
     && mkdir -p /var/log/nginx /var/lib/nginx /run /var/cache/nginx

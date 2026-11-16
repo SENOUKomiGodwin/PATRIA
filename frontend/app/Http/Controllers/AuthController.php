@@ -30,7 +30,7 @@ class AuthController extends Controller
         }
 
         try {
-            $response = Http::post(env('AUTH_SERVICE_URL', env('API_URL')) . '/api/login', [
+            $response = Http::post(env('AUTH_SERVICE_URL', env('API_URL')) . '/api/auth/login', [
                 'email' => $credentials['email'],
                 'password' => $credentials['password'],
             ]);
