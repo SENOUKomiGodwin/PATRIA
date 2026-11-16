@@ -52,6 +52,7 @@ RUN set -e; \
         services/reporting-service \
         frontend ; do \
         echo "==> composer install $app"; \
+        mkdir -p "$app/bootstrap/cache" && \
         (cd "$app" && composer install --no-dev --optimize-autoloader --no-interaction); \
     done
 
