@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth.session' => \App\Http\Middleware\AuthenticateSession::class,
         ]);
+
+        // Trust all proxies (nginx, Cloudflare) and force HTTPS in production
+        $middleware->trustProxies(at: '*');
+        if (app()->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
