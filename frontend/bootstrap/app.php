@@ -15,9 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.session' => \App\Http\Middleware\AuthenticateSession::class,
         ]);
 
-        // Trust all proxies (nginx, Cloudflare) and force HTTPS in production
+        // Trust all proxies (nginx, Cloudflare)
         $middleware->trustProxies(at: '*');
-        if (app()->environment('production')) {
+
+        // Force HTTPS in production (only if APP_ENV is set, not during composer install)
+        if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     })
