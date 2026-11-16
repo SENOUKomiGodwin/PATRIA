@@ -2,6 +2,8 @@
 # Image "tout-en-un" PATRIA pour Render : nginx + 6 microservices Laravel + frontend
 # Construit depuis la racine du dépôt (dockerContext: . dans render.yaml).
 
+ARG BUILD_VERSION=2
+
 # ---------- Étape 1 : build des assets Vite du frontend ----------
 FROM node:20-alpine AS assets
 WORKDIR /build
@@ -60,7 +62,7 @@ RUN set -e; \
 COPY deploy/all-in-one/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/all-in-one/start.sh /usr/local/bin/start.sh
 COPY deploy/all-in-one/env /app/deploy/all-in-one/env
-RUN chmod +x /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh && touch /app/deploy/all-in-one/env/.cache-bust-${BUILD_VERSION}
 
 RUN chmod +x /usr/local/bin/start.sh \
     && mkdir -p /var/log/nginx /var/lib/nginx /run /var/cache/nginx
