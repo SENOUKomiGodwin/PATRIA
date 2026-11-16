@@ -27,7 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip \
+    && echo "deploy-v4-2026-11-16-force-rebuild"
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
