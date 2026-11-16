@@ -60,6 +60,7 @@ RUN set -e; \
 COPY deploy/all-in-one/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/all-in-one/start.sh /usr/local/bin/start.sh
 COPY deploy/all-in-one/env /app/deploy/all-in-one/env
+RUN chmod +x /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh \
     && mkdir -p /var/log/nginx /var/lib/nginx /run /var/cache/nginx
