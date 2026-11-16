@@ -12,6 +12,20 @@
 
 set -u
 
+# APP_KEY / JWT_SECRET sont obligatoires (chiffrement cookies/sessions,
+# signature JWT). Secours éphémère si absents des variables Render :
+# les sessions et tokens sont alors invalidés à chaque redémarrage.
+if [ -z "${APP_KEY:-}" ]; then
+    APP_KEY="base64:$(head -c 32 /dev/urandom | base64 | tr -d '\n')"
+    export APP_KEY
+    echo "!! APP_KEY absente : clé éphémère générée (sessions perdues au redémarrage)"
+fi
+if [ -z "${JWT_SECRET:-}" ]; then
+    JWT_SECRET="$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
+    export JWT_SECRET
+    echo "!! JWT_SECRET absent : secret éphémère généré (tokens perdus au redémarrage)"
+fi
+
 DEPLOY_DIR=/app/deploy/all-in-one
 # Chemins réels dans l'image : les 6 API sous services/, le frontend à la racine
 APPS="services/auth-service services/asset-service services/movement-service services/inventory-service services/maintenance-service services/reporting-service frontend"
@@ -39,8 +53,7 @@ APP_LOCALE=en
 APP_FALLBACK_LOCALE=en
 APP_FAKER_LOCALE=en_US
 APP_MAINTENANCE_DRIVER=file
-LOG_CHANNEL=stack
-LOG_STACK=single
+LOG_CHANNEL=stderr
 LOG_LEVEL=warning
 DB_CONNECTION=${DB_CONNECTION:-pgsql}
 DB_HOST=${DB_HOST:-127.0.0.1}
@@ -89,9 +102,22 @@ for entry in $PORTS; do
     app=${entry%%:*}
     port=${entry##*:}
     echo "==> serve $app sur 127.0.0.1:$port"
-    (cd "/app/$app" && php artisan serve --host=127.0.0.1 --port="$port" >"/tmp/serve-${app##*/}.log" 2>&1) &
+    # Logs streamés sur stdout (visibles dans Render) avec préfixe par app
+    (cd "/app/$app" && php artisan serve --host=127.0.0.1 --port="$port" 2>&1 | sed "s/^/[${app##*/}] /") &
 done
 
-# Laisse les serveurs monter, puis nginx en avant-plan (PID 1)
-sleep 3
+# Attend que le frontend réponde réellement avant de lancer nginx.
+# 000 = connexion refusée ; tout code HTTP (même 500) prouve que PHP tourne.
+i=0
+code=000
+until [ "$code" != "000" ] || [ "$i" -ge 90 ]; do
+    code=$(curl -s --max-time 5 -o /dev/null -w '%{http_code}' http://127.0.0.1:8007/login 2>/dev/null || echo 000)
+    if [ "$code" = "000" ]; then
+        i=$((i+1))
+        sleep 2
+    fi
+done
+echo "==> frontend /login -> HTTP $code après ~$((i*2))s d'attente"
+
+# nginx en avant-plan (PID 1) — seul processus exposé sur le port 10000
 exec nginx -g 'daemon off;'
