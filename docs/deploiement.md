@@ -13,9 +13,11 @@ répartit le trafic exactement comme `gateway/nginx.conf` en local.
 Les **7 bases PostgreSQL** sont sur Neon (projet `patria`, région
 `aws-eu-central-1` — même région que le service Render `frankfurt`).
 
-Coût indicatif : Render `0.5c-512mb` ≈ **7 $/mois** + Neon gratuit (hors
-dépassement). Si le conteneur manque de RAM (7 processus PHP), passer le
-plan à `1c-2g` (25 $/mois) dans `render.yaml`.
+Coût indicatif : plan Render **gratuit** (le service s'endort après
+inactivité, cold start ~1 min) + Neon gratuit (hors dépassement). Si le
+conteneur redémarre en boucle par manque de RAM (7 processus PHP +
+nginx dans 512 Mo), passer `plan` à `0.5c-512mb` (~7 $/mois) ou
+`1c-2g` (25 $/mois) dans `render.yaml`.
 
 ### A.1. État Neon (déjà provisionné)
 

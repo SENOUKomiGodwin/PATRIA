@@ -16,7 +16,8 @@ services:
     dockerfilePath: ./deploy/all-in-one/Dockerfile
     dockerContext: .
     region: frankfurt # même région que Neon (aws-eu-central-1)
-    plan: 0.5c-512mb # 7 $/mois — passer à 1c-2g si OOM (voir docs/deploiement.md)
+    plan: free # endort le service après inactivité (cold start ~1 min) ;
+    # si OOM (7 process PHP + nginx dans 512 Mo) passer a 0.5c-512mb (~7 $/mois)
     healthCheckPath: /login
     envVars:
       - key: APP_ENV
