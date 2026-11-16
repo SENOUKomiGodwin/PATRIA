@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip \
-    && echo "deploy-v4-2026-11-16-force-rebuild"
+    && echo "deploy-v5-2026-11-16-add-asset-url"
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
