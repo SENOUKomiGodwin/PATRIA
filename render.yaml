@@ -28,8 +28,11 @@ services:
         value: https://patria.onrender.com
       - key: CORS_ALLOWED_ORIGINS
         value: https://patria.onrender.com
+      # APP_KEY doit être au format Laravel "base64:<32 octets>" — Render
+      # generateValue produit une chaîne invalide pour l'Encrypter.
+      # Générer avec : php artisan key:generate --show
       - key: APP_KEY
-        generateValue: true
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_TTL
