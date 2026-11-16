@@ -4,6 +4,7 @@ x-laravel-env: &laravel-env
   APP_ENV: ${APP_ENV:-production}
   APP_DEBUG: ${APP_DEBUG:-false}
   APP_URL: ${APP_URL:-http://localhost}
+  CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
   DB_CONNECTION: pgsql
   DB_HOST: postgres
   DB_PORT: 5432
@@ -29,7 +30,7 @@ services:
     networks:
       - patria-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U patrimoine_user"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -172,6 +173,14 @@ services:
       APP_ENV: ${APP_ENV:-production}
       APP_DEBUG: ${APP_DEBUG:-false}
       APP_URL: ${APP_URL:-http://localhost}
+      APP_KEY: ${FRONTEND_APP_KEY}
+      API_URL: http://gateway
+      DEMO_MODE: ${DEMO_MODE:-false}
+      SESSION_DRIVER: database
+      SESSION_ENCRYPT: "false"
+      CACHE_STORE: database
+      DB_CONNECTION: sqlite
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     networks:

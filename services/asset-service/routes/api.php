@@ -18,6 +18,8 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/assets/{id}', [AssetController::class, 'destroy'])->middleware('role:ADMIN,GESTIONNAIRE');
     Route::get('/assets/{id}/qr', [AssetController::class, 'qr']);
     Route::get('/assets/{id}/depreciation', [AssetController::class, 'depreciation']);
+    Route::patch('/assets/{id}/assignment', [AssetController::class, 'updateAssignment'])->middleware('role:ADMIN,GESTIONNAIRE');
+    Route::patch('/assets/{id}/status', [AssetController::class, 'updateStatus'])->middleware('role:ADMIN,GESTIONNAIRE');
 
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store'])->middleware('role:ADMIN,GESTIONNAIRE');

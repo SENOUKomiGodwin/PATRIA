@@ -124,6 +124,39 @@ class AssetController extends Controller
         return response()->json($asset->load(['category', 'location']));
     }
 
+    public function updateAssignment(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'service_id' => 'nullable|string',
+            'location_id' => 'nullable|exists:locations,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        $asset = Asset::findOrFail($id);
+        $asset->update($request->only(['service_id', 'location_id']));
+
+        return response()->json($asset->load(['category', 'location']));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:EN_SERVICE,EN_MAINTENANCE,REFORME,CEDE',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        $asset = Asset::findOrFail($id);
+        $asset->update(['status' => $request->status]);
+
+        return response()->json($asset->load(['category', 'location']));
+    }
+
     public function destroy($id)
     {
         $asset = Asset::findOrFail($id);

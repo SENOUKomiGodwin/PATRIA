@@ -31,7 +31,7 @@ class AssetTest extends TestCase
         $admin = User::where('email', 'admin@patria.gov')->first();
         $token = auth('api')->login($admin);
 
-        $response = $this->withToken($token)->getJson('/api/assets');
+        $response = $this->withToken($token)->getJson('/api/assets?per_page=30');
         $response->assertStatus(200);
         $response->assertJsonCount(30, 'data');
     }
@@ -69,7 +69,7 @@ class AssetTest extends TestCase
         $auditeur = User::where('email', 'auditeur@patria.gov')->first();
         $token = auth('api')->login($auditeur);
 
-        $response = $this->withToken($token)->getJson('/api/assets');
+        $response = $this->withToken($token)->getJson('/api/assets?per_page=30');
         $response->assertStatus(200);
         $response->assertJsonCount(30, 'data');
     }
@@ -243,7 +243,54 @@ class AssetTest extends TestCase
 
         $data = $response->json();
         $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('meta', $data);
+        $this->assertArrayHasKey('total', $data);
         $this->assertCount(10, $data['data']);
+    }
+
+    public function test_admin_can_update_asset_assignment()
+    {
+        $admin = User::where('email', 'admin@patria.gov')->first();
+        $token = auth('api')->login($admin);
+        $asset = Asset::first();
+        $location = Location::where('id', '!=', $asset->location_id)->first();
+
+        $response = $this->withToken($token)->patchJson("/api/assets/{$asset->id}/assignment", [
+            'service_id' => 'SRV-002',
+            'location_id' => $location->id,
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('assets', [
+            'id' => $asset->id,
+            'service_id' => 'SRV-002',
+            'location_id' => $location->id,
+        ]);
+    }
+
+    public function test_admin_can_update_asset_status()
+    {
+        $admin = User::where('email', 'admin@patria.gov')->first();
+        $token = auth('api')->login($admin);
+        $asset = Asset::first();
+
+        $response = $this->withToken($token)->patchJson("/api/assets/{$asset->id}/status", [
+            'status' => 'EN_MAINTENANCE',
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('assets', ['id' => $asset->id, 'status' => 'EN_MAINTENANCE']);
+    }
+
+    public function test_agent_cannot_update_assignment()
+    {
+        $agent = User::where('email', 'agent@patria.gov')->first();
+        $token = auth('api')->login($agent);
+        $asset = Asset::first();
+
+        $response = $this->withToken($token)->patchJson("/api/assets/{$asset->id}/assignment", [
+            'service_id' => 'SRV-002',
+        ]);
+
+        $response->assertStatus(403);
     }
 }
