@@ -12,15 +12,6 @@
 
 set -u
 
-echo "=== DEBUG ENV ==="
-echo "DB_HOST=${DB_HOST:-NOT_SET}"
-echo "DB_PORT=${DB_PORT:-NOT_SET}"
-echo "DB_USERNAME=${DB_USERNAME:-NOT_SET}"
-echo "DB_PASSWORD=${DB_PASSWORD:+SET}"
-echo "APP_KEY=${APP_KEY:+SET}"
-echo "JWT_SECRET=${JWT_SECRET:+SET}"
-echo "=== END DEBUG ==="
-
 DEPLOY_DIR=/app/deploy/all-in-one
 # Chemins réels dans l'image : les 6 API sous services/, le frontend à la racine
 APPS="services/auth-service services/asset-service services/movement-service services/inventory-service services/maintenance-service services/reporting-service frontend"

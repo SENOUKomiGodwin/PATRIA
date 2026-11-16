@@ -45,6 +45,6 @@ services:
       - key: DB_PASSWORD
         sync: false # à renseigner dans le dashboard Render (secret Neon)
       - key: RUN_SEEDERS
-        value: "true" # passer à "false" après le premier démarrage réussi
+        value: "false" # passer à "false" après le premier démarrage réussi
       - key: DEMO_MODE
         value: "false"
