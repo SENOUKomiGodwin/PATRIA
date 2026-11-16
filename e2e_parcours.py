@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Parcours E2E PATRIA via la gateway : login -> bien -> transfert -> inventaire -> écarts -> panne -> clôture -> export PDF."""
-import json, sys, urllib.request, urllib.error
+import json, os, sys, urllib.request, urllib.error
 
-BASE = 'http://localhost'
+BASE = os.environ.get('BASE', 'http://localhost')
 EMAIL, PASSWORD = 'admin@patria.gov', 'Password123!'
 
 def req(method, path, token=None, data=None):
@@ -13,7 +13,7 @@ def req(method, path, token=None, data=None):
     if token:
         r.add_header('Authorization', f'Bearer {token}')
     try:
-        with urllib.request.urlopen(r, timeout=30) as resp:
+        with urllib.request.urlopen(r, timeout=120) as resp:
             raw = resp.read()
             ct = resp.headers.get('Content-Type', '')
             return resp.status, (raw if 'pdf' in ct or 'octet' in ct else json.loads(raw or b'{}'))

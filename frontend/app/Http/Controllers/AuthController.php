@@ -39,7 +39,7 @@ class AuthController extends Controller
                 $data = $response->json();
 
                 // Store JWT in session
-                Session::put('jwt_token', $data['token']);
+                Session::put('jwt_token', $data['access_token'] ?? $data['token']);
                 Session::put('user_name', $data['user']['name'] ?? $data['user']['email']);
                 Session::put('user_role', $data['user']['role']);
                 Session::put('user_service', $data['user']['service'] ?? 'Service général');

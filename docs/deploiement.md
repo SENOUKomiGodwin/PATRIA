@@ -1,6 +1,82 @@
-# Déploiement PATRIA sur VM Ubuntu
+# Déploiement PATRIA
 
-Guide pas à pas pour héberger la plateforme sur une VM Ubuntu (Oracle Cloud Always Free ou équivalent, 1 OCPU / 1 Go RAM suffisent pour la démo ; 2 Go recommandés pour le build).
+Deux options : **Render + Neon** (recommandée, sans serveur à gérer) ou **VM Ubuntu** (section plus bas).
+
+---
+
+## Option A — Render (applications) + Neon (bases de données)
+
+Architecture : **un seul service Render** (`type: web`) dont l'image
+`deploy/all-in-one/Dockerfile` embarque nginx + les 6 microservices Laravel +
+le frontend. nginx écoute sur le port 10000 (port attendu par Render) et
+répartit le trafic exactement comme `gateway/nginx.conf` en local.
+Les **7 bases PostgreSQL** sont sur Neon (projet `patria`, région
+`aws-eu-central-1` — même région que le service Render `frankfurt`).
+
+Coût indicatif : Render `0.5c-512mb` ≈ **7 $/mois** + Neon gratuit (hors
+dépassement). Si le conteneur manque de RAM (7 processus PHP), passer le
+plan à `1c-2g` (25 $/mois) dans `render.yaml`.
+
+### A.1. État Neon (déjà provisionné)
+
+- Projet : `patria` (id `silent-sun-13116919`), branche `main`
+- Hôte : `ep-autumn-mode-b98ogbj7.c-7.eu-central-1.aws.neon.tech` (port 5432)
+- Rôle applicatif : `patria_app`
+- Bases : `auth_db`, `asset_db`, `movement_db`, `inventory_db`,
+  `maintenance_db`, `reporting_db`, `frontend_db`
+
+Le mot de passe du rôle `patria_app` a été communiqué une seule fois :
+le conserver dans un gestionnaire de mots de passe. Pour le régénérer :
+Neon Console → Project `patria` → Roles → `patria_app` → Reset password.
+
+### A.2. Déployer sur Render (~10 min)
+
+1. Pousser la branche contenant `render.yaml` sur GitHub (PR #6 → `develop`).
+2. [Render Dashboard](https://dashboard.render.com) → **New → Blueprint**.
+3. Sélectionner le dépôt `SENOUKomiGodwin/PATRIA` et la branche.
+4. Render lit `render.yaml` et demande les secrets marqués `sync: false` :
+   - `DB_PASSWORD` → mot de passe du rôle Neon `patria_app`.
+   (`APP_KEY` et `JWT_SECRET` sont générés automatiquement.)
+5. Cliquer **Apply** : le build Docker prend ~10-15 min (7 applications
+   Laravel + assets Vite).
+
+### A.3. Après le premier déploiement
+
+- L'URL publique est `https://patria.onrender.com` (ou le sous-domaine
+  attribué par Render si le nom est pris).
+- Si le sous-domaine diffère, mettre à jour dans Render → service `patria`
+  → Environment : `APP_URL` et `CORS_ALLOWED_ORIGINS`, puis
+  **Manual Deploy → Deploy latest commit** (ou Edit → Save pour recharger).
+- Une fois les migrations + seeders exécutés avec succès (logs Render),
+  passer `RUN_SEEDERS` à `"false"` pour éviter les doublons de données de
+  démo à chaque redémarrage.
+- Comptes de démonstration (mot de passe `Password123!`) :
+  `admin@patria.gov` (ADMIN), `gestionnaire@patria.gov` (GESTIONNAIRE),
+  `agent@patria.gov` (AGENT), `auditeur@patria.gov` (AUDITEUR).
+
+### A.4. Vérifier
+
+```bash
+curl -I https://patria.onrender.com/login      # 200
+curl -X POST https://patria.onrender.com/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"admin@patria.gov","password":"Password123!"}'   # 200 + token
+BASE=https://patria.onrender.com python e2e_parcours.py         # parcours complet
+```
+
+### A.5. Limites de l'option Render
+
+- `php artisan serve` mono-processus par application : correct pour une
+  démo/pilote, pas pour un fort trafic.
+- Le système de fichiers est éphémère : pas de disque persistant (sessions
+  et cache sont en base Neon, OK).
+- Le cold start HTTP n'existe pas (service payant always-on), mais le
+  compute Neon gratuit se met en veille après inactivité : la première
+  requête SQL peut prendre quelques secondes (resume automatique).
+
+---
+
+## Option B — VM Ubuntu (Oracle Cloud Always Free ou équivalent)
 
 ## 1. Créer la VM
 

@@ -1,0 +1,23 @@
+# Contexte de build = racine du dépôt (deploy/all-in-one/Dockerfile sur Render).
+# Les .dockerignore propres à chaque service/frontend ne s'appliquent pas ici.
+
+**/vendor/
+**/node_modules/
+**/.env
+**/.env.*
+!**/.env.example
+**/storage/logs/*
+!**/storage/logs/.gitignore
+**/storage/framework/cache/*
+**/storage/framework/sessions/*
+**/storage/framework/views/*
+**/public/hot
+**/public/build
+**/.phpunit.result.cache
+**/.idea/
+**/.vscode/
+.git/
+docs/
+_mega_download/
+*.md
+!README.md
