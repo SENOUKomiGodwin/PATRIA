@@ -13,13 +13,35 @@
 set -u
 
 # APP_KEY / JWT_SECRET sont obligatoires (chiffrement cookies/sessions,
-# signature JWT). Secours éphémère si absents des variables Render :
-# les sessions et tokens sont alors invalidés à chaque redémarrage.
-if [ -z "${APP_KEY:-}" ]; then
-    APP_KEY="base64:$(head -c 32 /dev/urandom | base64 | tr -d '\n')"
-    export APP_KEY
-    echo "!! APP_KEY absente : clé éphémère générée (sessions perdues au redémarrage)"
-fi
+# signature JWT). Laravel exige "base64:<16|24|32 octets>" ou une clef
+# brute de 16/24/32 octets. Cas fréquent : clé base64 collée sans le
+# préfixe "base64:" -> on le rajoute si le contenu décode en 32 octets.
+case "${APP_KEY:-}" in
+    base64:*) ;;
+    *)
+        if [ "$(printf '%s' "$APP_KEY" | base64 -d 2>/dev/null | wc -c)" = "32" ]; then
+            APP_KEY="base64:$APP_KEY"
+            echo "==> APP_KEY préfixée base64: (format corrigé)"
+        fi
+        ;;
+esac
+
+app_key_len() {
+    case "$1" in
+        base64:*) printf '%s' "${1#base64:}" | base64 -d 2>/dev/null | wc -c ;;
+        *) printf '%s' "$1" | wc -c ;;
+    esac
+}
+kl=$(app_key_len "${APP_KEY:-}")
+case "$kl" in
+    16|24|32) ;;
+    *)
+        APP_KEY="base64:$(head -c 32 /dev/urandom | base64 | tr -d '\n')"
+        echo "!! APP_KEY invalide (${kl} octets) : clé éphémère générée"
+        ;;
+esac
+export APP_KEY
+
 if [ -z "${JWT_SECRET:-}" ]; then
     JWT_SECRET="$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
     export JWT_SECRET
