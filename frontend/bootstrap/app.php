@@ -18,10 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust all proxies (nginx, Cloudflare)
         $middleware->trustProxies(at: '*');
 
-        // Force HTTPS in production (only if APP_ENV is set, not during composer install)
-        if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-        }
+        // Force HTTPS in production
+        $middleware->web(\App\Http\Middleware\ForceHttps::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

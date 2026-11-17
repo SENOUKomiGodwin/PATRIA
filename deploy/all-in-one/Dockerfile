@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip \
-    && echo "deploy-v7-2026-11-16-force-https-trusted-proxies"
+    && echo "deploy-v8-2026-11-16-middleware-force-https"
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -62,7 +62,7 @@ RUN set -e; \
 # Configuration nginx passerelle + script de démarrage + .env par application
 COPY deploy/all-in-one/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/all-in-one/start.sh /usr/local/bin/start.sh
-# Cache bust: env v7 (2026-11-16) - TRUSTED_PROXIES and FORCE_HTTPS
+# Cache bust: env v8 (2026-11-16) - middleware ForceHttps
 COPY deploy/all-in-one/env /app/deploy/all-in-one/env
 RUN chmod +x /usr/local/bin/start.sh
 
