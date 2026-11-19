@@ -11,14 +11,14 @@ Le système doit permettre la gestion complète du cycle de vie des actifs : acq
 ## 2. Architecture Technique
 
 ### 2.1 Stack Technologique
-- **Backend** : Laravel 11 (PHP 8.3)
-- **Base de données** : PostgreSQL 16
-- **Orchestration** : Docker / Docker Compose
+- **Backend** : Laravel 11 (PHP 8.2)
+- **Base de données** : PostgreSQL 16 (local) / Neon PostgreSQL Lakebase (cloud)
+- **Orchestration** : Docker / Docker Compose (local), SnapDeploy / Render (cloud)
 - **API Gateway** : Nginx
-- **Frontend** : À définir (suggestion : Vue.js 3 ou React)
+- **Frontend** : Laravel Blade + Tailwind CSS v4 + Alpine.js
 
 ### 2.2 Architecture Micro-Services
-Le système est composé de 6 services indépendants :
+Le système est composé de 6 services Laravel indépendants + 1 frontend Laravel :
 
 1. **auth-service** : Gestion de l'authentification et des utilisateurs
 2. **asset-service** : Gestion des actifs, catégories et localisations
@@ -26,11 +26,14 @@ Le système est composé de 6 services indépendants :
 4. **inventory-service** : Gestion des campagnes d'inventaire
 5. **maintenance-service** : Gestion des interventions et plans de maintenance
 6. **reporting-service** : Génération de rapports et exports
+7. **frontend** : Interface utilisateur (Blade + Tailwind + Alpine.js)
 
 ### 2.3 Pattern Base de Données
-- **Database per Service** : 1 conteneur PostgreSQL avec 6 bases de données séparées
+- **Database per Service** : 1 conteneur PostgreSQL 16 avec 6 bases de données séparées (local)
+- **Neon PostgreSQL Lakebase** : 6 bases de données séparées sur cloud (production)
 - **Pas de clés étrangères SQL entre services** : Communication via UUID et appels REST
 - **Isolation des données** : Chaque service a sa propre base de données
+- **Bases de données** : auth_db, asset_db, movement_db, inventory_db, maintenance_db, reporting_db, frontend_db
 
 ## 3. Sécurité et Authentification
 
@@ -198,11 +201,11 @@ Le modèle de données est défini dans le diagramme UML (voir `docs/uml/patrimo
 ## 8. Déploiement
 
 ### 8.1 Environnement Requis
-- Docker et Docker Compose
+- Docker et Docker Compose (local)
 - Git
 - Navigateur web moderne
 
-### 8.2 Commandes de Base
+### 8.2 Déploiement Local
 ```bash
 # Copier l'environnement
 cp .env.example .env
@@ -217,10 +220,25 @@ docker-compose down
 docker-compose logs -f [service]
 ```
 
-### 8.3 Ports par Défaut
-- Gateway : 80
-- Frontend : 3000
-- PostgreSQL : 5432
+### 8.3 Déploiement Cloud
+#### Option 1 : SnapDeploy
+- Image Docker tout-en-un (nginx + 6 services Laravel + frontend)
+- Configuration via variables d'environnement
+- Port exposé : 10000
+- Documentation : `docs/deploiement-snapdeploy.md`
+
+#### Option 2 : Render
+- Service web Docker tout-en-un
+- Configuration via render.yaml
+- Base de données Neon PostgreSQL
+- Documentation : `docs/deploiement.md`
+
+### 8.4 Ports par Défaut
+- Gateway (local) : 80
+- Services API (local) : 8001-8006
+- Frontend (local) : 8007
+- PostgreSQL (local) : 5432
+- Tout-en-one (cloud) : 10000
 
 ## 9. Tests
 
@@ -237,7 +255,9 @@ Objectif : minimum 80% de couverture de code pour les services critiques
 ### 10.1 Documentation Technique
 - Diagramme UML : `docs/uml/patrimoine-uml.drawio`
 - Fiche technique : `docs/fiche-technique.md`
-- Proposition financière : `docs/proposition-financiere.md`
+- Proposition financière : `docs/Proposition financière – PATRIA.pdf`
+- Déploiement SnapDeploy : `docs/deploiement-snapdeploy.md`
+- Déploiement Render : `docs/deploiement.md`
 - README principal : `README.md`
 
 ### 10.2 Documentation API
@@ -259,23 +279,24 @@ Objectif : minimum 80% de couverture de code pour les services critiques
 
 ## 12. Roadmap
 
-### Phase 1 (MVP)
+### Phase 1 (MVP) ✅ COMPLÉTÉ
 - Infrastructure Docker
 - Auth Service
 - Asset Service
 - Frontend basique
 
-### Phase 2
+### Phase 2 ✅ COMPLÉTÉ
 - Movement Service
 - Inventory Service
 - Maintenance Service
 
-### Phase 3
+### Phase 3 ✅ COMPLÉTÉ
 - Reporting Service
-- Frontend complet
+- Frontend complet (Blade + Tailwind + Alpine.js)
 - Tests et documentation
 
-### Phase 4
+### Phase 4 🔄 EN COURS
+- Déploiement cloud (SnapDeploy / Render)
 - Monitoring avancé
 - Optimisations performances
 - Fonctionnalités avancées
